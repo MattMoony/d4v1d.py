@@ -1,4 +1,6 @@
+import os
 import time
+import json
 import lib.utils
 import graphviz as gv
 from selenium import webdriver
@@ -90,23 +92,53 @@ def draw_conns(d, uname, followers, following):
     for u in following:
         d.edge(uname, u)
         
-def st4lk(uname):
+def rec_st4lk(driver, d, fols, depth, max_depth, u_crw):
+    if depth > max_depth:
+        return
+    
+    for f in fols:
+        if not f in u_crw.keys():
+            driver.get('https://www.instagram.com/{}'.format(f))
+            fole = get_followers(driver, f)
+            foli = get_following(driver, f)        
+            draw_conns(d, f, fole, foli)
+            u_crw[f] = dict(fole=fole, foli=foli)
+        
+        rec_st4lk(driver, d, u_crw['fole'], depth+1, max_depth)
+        rec_st4lk(driver, d, u_crw['foli'], depth+1, max_depth)
+        
+def st4lk(uname, dest_folder=None, depth=0):
     driver = webdriver.Chrome()
     lib.utils.prompt_login(driver)
+    
+    if not dest_folder:
+        dest_folder = './results/'
+    
+    dest_folder = os.path.join(dest_folder, uname)
+    if not os.path.isdir(dest_folder):
+        os.mkdir(dest_folder)
+        
+    u_crw = dict()
     
     driver.get('https://instagram.com/{}'.format(uname))
     followers = get_followers(driver, uname)
     following = get_following(driver, uname)
         
+    fname = os.path.join(dest_folder, '{}.dot'.format(uname))
     d = gv.Digraph(comment='{}\'s relations'.format(uname),
-                   format='svg', filename='results/{}.dot'.format(uname))
-    d.node(uname)
+                   format='svg', filename=fname)
+    d.attr('node', shape='circle')
+    d.attr('graph', pad='0.5', nodesep='1', ranksep='2')
     draw_conns(d, uname, followers, following)
+    
+    u_crw[uname] = dict(fole=followers, foli=following)
+    
+    rec_st4lk(driver, d, followers, 1, depth, u_crw)
+    rec_st4lk(driver, d, following, 1, depth, u_crw)
 
-    for f in followers:
-        driver.get('https://www.instagram.com/{}'.format(f))
-        fole = get_followers(driver, f)
-        foli = get_following(driver, f)        
-        draw_conns(d, f, fole, foli)
-
+    print('[*] Creating graph ... ')
     d.render(d.filename, view=True)
+    
+    with open(os.path.join(dest_folder, uname + '.json'), 'w') as f:
+        print('[*] Creating JSON ... ')
+        json.dump(u_crw, f)

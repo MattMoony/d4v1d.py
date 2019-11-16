@@ -39,7 +39,8 @@ def main():
     parser.add_argument('--st4lk', action='store_true', dest='st4lk', help='St4lk user?')
     parser.add_argument('--scr4p3', action='store_true', dest='scr4p3', help='Scr4p3 account?')
     parser.add_argument('-u', '--username', type=str, dest='uname', help='Target username ... ')
-    parser.add_argument('-d', '--dest-dir', type=str, dest='dstdir', help='Output directory (for scraped images, etc.)')
+    parser.add_argument('--dest-dir', type=str, dest='dstdir', help='Output directory (for scraped images, etc.)')
+    parser.add_argument('--depth', type=int, dest='depth', help='St4lk1ng depth ...', default=0)
     args = parser.parse_args()
     
     print_title()
@@ -48,7 +49,7 @@ def main():
         if not args.uname:
             print_err('Username (argument: -u) is required!')
             os._exit(1)
-        lib.st4lker.st4lk(args.uname)
+        lib.st4lker.st4lk(args.uname, args.dstdir, args.depth)
         
     if args.scr4p3:
         if not args.uname:

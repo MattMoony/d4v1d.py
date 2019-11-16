@@ -33,7 +33,8 @@ def get_img_srcs(driver):
         )
         
         try:
-            ul = driver.find_element_by_class_name(POPUP_SLIDES_CLASS)
+            ul = driver.find_elements_by_class_name(POPUP_SLIDES_CLASS)[-1]
+            chev = driver.find_element_by_class_name('coreSpriteRightChevron')
             srcs = set()
             goon = True
             while goon:
@@ -79,9 +80,25 @@ def close_popup(driver):
 def get_imgs(driver, dest_folder):
     try:
         imgs = driver.find_elements_by_css_selector('a[href*="/p/"]')
+        return imgs
     except Exception:
         return []    
-    
+
+def scr4p3(uname, dest_folder=None):
+    driver = webdriver.Chrome()
+    driver.get('https://instagram.com/{}'.format(uname))
+        
+    if not dest_folder:
+        dest_folder = './imgs/'
+        
+    dest_folder = os.path.join(dest_folder, uname)
+    if not os.path.isdir(dest_folder):
+        os.mkdir(dest_folder)
+
+    imgs = get_imgs(driver, dest_folder)
+    if len(imgs) == 0:
+        print('[*] No images found ... ')
+        
     for im in imgs:
         im.click()
         
@@ -98,15 +115,3 @@ def get_imgs(driver, dest_folder):
                 print('[*] Saved {:} ... '.format(fname))
 
         close_popup(driver)
-
-def scr4p3(uname, dest_folder=None):
-    driver = webdriver.Chrome()
-    driver.get('https://instagram.com/{}'.format(uname))
-
-    if not dest_folder:
-        dest_folder = './imgs/{:}'.format(uname)
-        
-    if not os.path.isdir(dest_folder):
-        os.mkdir(dest_folder)
-
-    get_imgs(driver, dest_folder)

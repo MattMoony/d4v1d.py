@@ -16,6 +16,7 @@ for reconnaissance work.
 |----------------|-----------------------------------|----------|
 | --scr4p3       | Flag; enables scr4p3 mode         | ❌        |
 | --st4lk        | Flag; enables reconnaissance mode | ❌        |
+| --visible      | Flag; shows browser window        | ❌        |
 | -u, --username | Target's username                 | ✔️        |
 | --dest-dir     | Output directory path             | ❌        |
 | --depth        | Information gathering depth       | ❌        |

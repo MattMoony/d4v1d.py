@@ -3,7 +3,6 @@ import time
 import json
 import lib.utils
 import graphviz as gv
-from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -107,8 +106,7 @@ def rec_st4lk(driver, d, fols, depth, max_depth, u_crw):
         rec_st4lk(driver, d, u_crw['fole'], depth+1, max_depth)
         rec_st4lk(driver, d, u_crw['foli'], depth+1, max_depth)
         
-def st4lk(uname, dest_folder=None, depth=0):
-    driver = webdriver.Chrome()
+def st4lk(driver, uname, dest_folder=None, depth=0):
     lib.utils.prompt_login(driver)
     
     if not dest_folder:

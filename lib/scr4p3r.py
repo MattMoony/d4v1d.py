@@ -1,7 +1,6 @@
 import os
 import requests as req
 import dateutil.parser
-from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -84,8 +83,7 @@ def get_imgs(driver, dest_folder):
     except Exception:
         return []    
 
-def scr4p3(uname, dest_folder=None):
-    driver = webdriver.Chrome()
+def scr4p3(driver, uname, dest_folder=None):
     driver.get('https://instagram.com/{}'.format(uname))
         
     if not dest_folder:

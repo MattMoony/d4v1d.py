@@ -12,14 +12,16 @@ for reconnaissance work.
 
 ## Usage
 
-| Arg.-Name      | Description                       | Required |
-|----------------|-----------------------------------|----------|
-| --scr4p3       | Flag; enables scr4p3 mode         | ❌        |
-| --st4lk        | Flag; enables reconnaissance mode | ❌        |
-| --visible      | Flag; shows browser window        | ❌        |
-| -u, --username | Target's username                 | ✔️        |
-| --dest-dir     | Output directory path             | ❌        |
-| --depth        | Information gathering depth       | ❌        |
+| Arg.-Name      | Description                          | Required |
+|----------------|--------------------------------------|----------|
+| --scr4p3       | Flag; enables scr4p3 mode            | ❌        |
+| --st4lk        | Flag; enables reconnaissance mode    | ❌        |
+| --visible      | Flag; shows browser window           | ❌        |
+| --log-all      | Flag; logs all chromedriver messages | ❌        |
+| -u, --username | Target's username                    | ✔️        |
+| --dest-dir     | Output directory path                | ❌        |
+| --depth        | Information gathering depth          | ❌        |
+| --flim         | Follow(er/ing) limit                 | ❌        |
 
 
 ---

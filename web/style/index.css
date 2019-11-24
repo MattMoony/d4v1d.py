@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css?family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Ubuntu&display=swap');
+
+html, body {
+    padding: 0;
+    margin: 0;
+}
+
+body *::selection {
+    background-color: rgba(255, 77, 48, .5);
+    color: #F2F4F3;
+}
+
+header {
+    border-bottom: 2.5px solid #f4f4f4;
+    padding: 15px;
+    margin: 0;
+    background-color: #0A0908;
+    color: #F2F4F3;
+}
+
+header h1 {
+    font-family: 'VT323', monospace;
+    letter-spacing: 2.5px;
+    margin: 0;
+    padding: 0;
+}
+
+article {
+    width: 60%;
+    margin: 0 auto;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.st4lk h3 {
+    font-family: 'Open Sans', sans-serif; 
+    letter-spacing: 1px;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 5px 10px;
+}
+
+.st4lk-res {
+    padding: 0px 15px;
+}
+
+.st4lk-user {
+    text-decoration: none;
+    color: #0A0908;
+    display: block;
+    padding: 3px 5px;
+    border-left: 3px solid #f4f4f4;
+    transition: .3s ease;
+}
+
+.st4lk-user:hover {
+    background-color: #fafafa;
+    padding-left: 7.5px;
+}

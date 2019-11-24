@@ -4,3 +4,4 @@ imgs/*
 !imgs/.gitkeep
 lib/__pycache__/*
 debug.log
+.vscode/*

@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 
 # GLOBAL CONSTANTS ------------------------- #
 
+ATTRB_CLASS = 'g47SY'
 POPUP_CLASS = 'PZuss'
 POPUP_EXIT_CLASS = 'wpO6b'
 USERNAME_CLASS = '_0imsa'
@@ -40,9 +41,16 @@ def scroll_popup(driver, target, scroll_timeout=2, scroll_err_limit=5):
             print(e)
             time.sleep(scroll_timeout)
             
-def get_followers(driver, uname):
+def get_followers(driver, uname, flim):
     try:
-        followers_e = driver.find_element_by_css_selector('a[href*="/{}/followers"]'.format(uname))
+        fcount = driver.find_elements_by_class_name(ATTRB_CLASS)[1].text
+        if (int(fcount) > flim):
+            return []
+    except Exception:
+        return []
+
+    try:
+        followers_e = driver.find_element_by_css_selector('a[href="/{}/followers/"]'.format(uname))
     except Exception:
         return []
     followers = []
@@ -61,9 +69,16 @@ def get_followers(driver, uname):
     driver.find_element_by_class_name(POPUP_EXIT_CLASS).click()
     return followers
 
-def get_following(driver, uname):
+def get_following(driver, uname, flim):
     try:
-        following_e = driver.find_element_by_css_selector('a[href*="/{}/following"]'.format(uname))
+        fcount = driver.find_elements_by_class_name(ATTRB_CLASS)[2].text
+        if (int(fcount) > flim):
+            return []
+    except Exception:
+        return []
+
+    try:
+        following_e = driver.find_element_by_css_selector('a[href="/{}/following/"]'.format(uname))
     except Exception:
         return []
     following = []
@@ -82,31 +97,42 @@ def get_following(driver, uname):
     driver.find_element_by_class_name(POPUP_EXIT_CLASS).click()
     return following
 
-def draw_conns(d, uname, followers, following):
+def draw_conns(uname, followers, following, users, edges):
     for u in set([*followers, *following]):
-        d.node(u)
+        users.add(u)
         
     for u in followers:
-        d.edge(u, uname)
+        edges.append(make_edge(u, uname, color=dict(color='#3066BE')))
     for u in following:
-        d.edge(uname, u)
+        edges.append(make_edge(uname, u, color=dict(color='#119DA4')))
         
-def rec_st4lk(driver, d, fols, depth, max_depth, u_crw):
+def rec_st4lk(driver, fols, depth, max_depth, flim, users, edges):
     if depth > max_depth:
         return
     
     for f in fols:
-        if not f in u_crw.keys():
+        if not f in users:
             driver.get('https://www.instagram.com/{}'.format(f))
-            fole = get_followers(driver, f)
-            foli = get_following(driver, f)        
-            draw_conns(d, f, fole, foli)
-            u_crw[f] = dict(fole=fole, foli=foli)
+            fole = get_followers(driver, f, flim)
+            foli = get_following(driver, f, flim)        
+            draw_conns(f, fole, foli, users, edges)
         
-        rec_st4lk(driver, d, u_crw['fole'], depth+1, max_depth)
-        rec_st4lk(driver, d, u_crw['foli'], depth+1, max_depth)
+        rec_st4lk(driver, fole, depth+1, max_depth, flim, users, edges)
+        rec_st4lk(driver, foli, depth+1, max_depth, flim, users, edges)
+
+def make_node(uname, **kwargs):
+    d = {k: v for k, v in kwargs.items()}
+    d['id'] = uname
+    d['label'] = uname
+    return d
+
+def make_edge(u1, u2, **kwargs):
+    d = {k: v for k, v in kwargs.items()}
+    d['from'] = u1
+    d['to'] = u2
+    return d
         
-def st4lk(driver, uname, dest_folder=None, depth=0):
+def st4lk(driver, uname, dest_folder=None, depth=0, flim=500):
     lib.utils.prompt_login(driver)
     
     if not dest_folder:
@@ -116,27 +142,25 @@ def st4lk(driver, uname, dest_folder=None, depth=0):
     if not os.path.isdir(dest_folder):
         os.mkdir(dest_folder)
         
-    u_crw = dict()
+    users = set()
+    edges = list()
     
     driver.get('https://instagram.com/{}'.format(uname))
-    followers = get_followers(driver, uname)
-    following = get_following(driver, uname)
-        
-    fname = os.path.join(dest_folder, '{}.dot'.format(uname))
-    d = gv.Digraph(comment='{}\'s relations'.format(uname),
-                   format='svg', filename=fname)
-    d.attr('node', shape='circle')
-    d.attr('graph', pad='0.5', nodesep='1', ranksep='2')
-    draw_conns(d, uname, followers, following)
+    followers = get_followers(driver, uname, flim)
+    following = get_following(driver, uname, flim)
     
-    u_crw[uname] = dict(fole=followers, foli=following)
+    users.add(uname)
+    draw_conns(uname, followers, following, users, edges)
     
-    rec_st4lk(driver, d, followers, 1, depth, u_crw)
-    rec_st4lk(driver, d, following, 1, depth, u_crw)
+    rec_st4lk(driver, followers, 1, depth, flim, users, edges)
+    rec_st4lk(driver, following, 1, depth, flim, users, edges)
 
-    print('[*] Creating graph ... ')
-    d.render(d.filename, view=True)
-    
+    print('[*] Creating JSON ... ')
+    jsonf = {
+        'nodes': list(map(lambda u: make_node(u, color=dict(background='#AEECEF', border='#83B1B3')), users)),
+        'edges': edges
+    }    
+
     with open(os.path.join(dest_folder, uname + '.json'), 'w') as f:
-        print('[*] Creating JSON ... ')
-        json.dump(u_crw, f)
+        print('[*] Writing JSON ... ')
+        json.dump(jsonf, f)

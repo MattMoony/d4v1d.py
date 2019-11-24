@@ -14,7 +14,9 @@ def login(driver, uname, pwd):
     inps = driver.find_elements_by_class_name(INPUT_CLASS)
     subb = driver.find_element_by_class_name(SUBMIT_CLASS)
     
+    inps[0].clear()
     inps[0].send_keys(uname)
+    inps[1].clear()
     inps[1].send_keys(pwd)
     try:
         subb.click()

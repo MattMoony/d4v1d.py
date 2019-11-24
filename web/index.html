@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>d4v1d.py</title>
+
+    <link rel="stylesheet" type="text/css" href="/style/index.css" />
+</head>
+
+<body>
+    <header>
+        <h1>d4v1d.py</h1>
+    </header>
+    <article>
+        <div class="st4lk">
+            <h3>St4lk3d ({{u_count}})</h3>
+            <div class="st4lk-res">
+                {{#users}}
+                <a class="st4lk-user" href="/view/{{name}}">{{name}}</a>
+                {{/users}}
+                {{^users}}
+                <p>No users st4lked yet!</p>
+                {{/users}}
+            </div> 
+        </div>
+    </article>
+</body>
+
+</html>
